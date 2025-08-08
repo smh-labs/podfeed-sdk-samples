@@ -132,25 +132,7 @@ except PodFeedError as e:
 ```
 
 ## API Reference
-
-### Core Methods
-
-- `generate_audio(**kwargs)` - Generate audio from various input types
-- `wait_for_completion(task_id, timeout=1800)` - Wait for task completion
-- `get_task_progress(task_id)` - Check task progress
-- `get_audio_status(task_id)` - Get audio generation status
-
-### Audio Management
-
-- `list_audios(limit=20, offset=0, status=None)` - List audio files
-- `get_audio(audio_id)` - Get audio details
-- `delete_audio(audio_id)` - Delete audio file
-- `download_audio_with_metadata(audio_id)` - Download with metadata
-
-### File Operations
-
-- `get_upload_urls(files)` - Get signed upload URLs
-- `create_share_link(audio_id)` - Create shareable link
+We'll be publishing an API reference and documentation soon.
 
 
 ## Requirements
