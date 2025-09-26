@@ -34,7 +34,7 @@ def main():
                 mode="dialogue",
                 input_content=InputContent(url=website_url),
                 voice_config=VoiceConfig(
-                    host_voice="elevenlabs-cassidy", cohost_voice="google-male-puck"
+                    host_voice="gemini-puck", cohost_voice="gemini-achird"
                 ),
                 content_config=ContentConfig(
                     level="intermediate",
@@ -57,6 +57,8 @@ def main():
 
         print("Audio generation completed!")
         print(f"Final status: {final_result}")
+
+        print(f"Audio URL: {final_result.get('audio_url')}")
 
     except PodfeedError as e:
         print(f"Podfeed API Error: {e}")
