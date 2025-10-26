@@ -25,7 +25,7 @@ def main():
 
     try:
         # Example URL
-        website_url = "https://podfeed.ai/faq"
+        website_url = "https://podfeed.ai"
 
         # Generate audio from website
         result = client.generate_audio(
