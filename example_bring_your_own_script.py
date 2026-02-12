@@ -58,7 +58,8 @@ COHOST: That's great to hear!
         print("Audio generation completed!")
         print(f"Final status: {final_result}")
 
-        print(f"Audio URL: {final_result.get('audio_url')}")
+        audio_url = final_result.get("result", {}).get("audio_url")
+        print(f"Audio URL: {audio_url}")
 
     except PodfeedError as e:
         print(f"Podfeed API Error: {e}")

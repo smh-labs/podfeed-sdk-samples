@@ -1,22 +1,22 @@
 """
-Example Python code demonstrating podcast generation from a given topic.
-Podfeed will run a research on the topic and generate a podcast.
+Example: Generate audio from multiple combined sources (text + URL + optional file).
+Combines different content types in a single request for richer podcast content.
 """
 
 import os
 import sys
+from pathlib import Path
 from podfeed import (
     PodfeedClient,
     PodfeedError,
     AudioGenerationRequest,
-    InputContent,
+    SourceItem,
     VoiceConfig,
     ContentConfig,
 )
 
 
 def main():
-    # Initialize client
     api_key = os.getenv("PODFEED_API_KEY")
     if not api_key:
         print("Error: PODFEED_API_KEY environment variable not set")
@@ -24,45 +24,57 @@ def main():
 
     client = PodfeedClient(api_key=api_key)
 
-    topic = "Vibe coding best practices"
+    # Combine multiple sources: intro text + Wikipedia URL
+    sources = [
+        SourceItem(
+            input_type="text",
+            content="This episode explores artificial intelligence. "
+            "We'll discuss its history, current applications, and future potential.",
+        ),
+        SourceItem(
+            input_type="url",
+            content="https://en.wikipedia.org/wiki/Artificial_intelligence",
+        ),
+    ]
+
+    # Optional: add a PDF if you have one
+    pdf_path = "sample_content/example_document.pdf"
+    if Path(pdf_path).exists():
+        sources.append(SourceItem(input_type="file", content=pdf_path))
 
     try:
-        # Generate audio directly from provided script (text-to-speech only)
         result = client.generate_audio(
             request=AudioGenerationRequest(
-                input_type="topic",
+                content_type="sources",
+                sources_content=sources,
                 mode="dialogue",
-                input_content=InputContent(topic=topic),
                 voice_config=VoiceConfig(
                     host_voice="gemini-achernar",
                     cohost_voice="gemini-achird",
-                    host_voice_instructions="Speak with a calm, gentle tone.",
-                    cohost_voice_instructions="Speak nervously, as if anxious about the future.",
                 ),
                 content_config=ContentConfig(
-                    level="beginner",
+                    level="intermediate",
                     length="medium",
                     language="en-US",
-                    questions="What are the best models for coding?",
-                    user_instructions="Explain it to someone who doesn't have experience coding, but already knows what vibe coding is.",
-                    emphasis="tactics, tips and tricks",
+                    user_instructions="Make it accessible for a general audience. "
+                    "Focus on practical applications.",
                 ),
             )
         )
 
-        print(f"Audio generation started successfully!")
+        print("Audio generation started successfully!")
         print(f"Task ID: {result['task_id']}")
         print(f"Status: {result['status']}")
 
-        # Wait for completion
         print("\nWaiting for audio generation to complete...")
         final_result = client.wait_for_completion(result["task_id"])
 
         print("Audio generation completed!")
-        print(f"Final status: {final_result}")
-
         audio_url = final_result.get("result", {}).get("audio_url")
-        print(f"Audio URL: {audio_url}")
+        if audio_url:
+            print(f"Audio URL: {audio_url}")
+        else:
+            print(f"Result: {final_result}")
 
     except PodfeedError as e:
         print(f"Podfeed API Error: {e}")

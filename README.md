@@ -105,11 +105,13 @@ print(voices_config)
 See the example files in this directory.
 
 * `example_bring_your_own_script.py`: Generate audio from your own script, using Podfeed as a text-to-speech service only.
+* `example_combined_sources.py`: **New** - Combine multiple sources (text + URL + file) in one request.
+* `example_feed_and_preadd.py`: **New** - Pre-add generated audio to a feed, create feeds, and manage episodes.
 * `example_files.py`: Generate an audio podcast from local files (PDF, audio, and video files are supported)
 * `example_list_voices.py`: Demonstrates how to list available voices and filter by cost
 * `example_podcast_episode.py`: Generate a podcast from a real podcast episode (must be an Apple Podcast or Spotify Podcast episode URL)
 * `example_topic.py`: Generate a podcast from a given topic. Podfeed will research the topic first and generate the audio based on the report.
-* `example_website.py`: Generate a podcast from a website URL. 
+* `example_website.py`: Generate a podcast from a website URL.
 * `example_youtube.py`: Generate a podcast from a Youtube video URL.
 
 ## Error Handling
