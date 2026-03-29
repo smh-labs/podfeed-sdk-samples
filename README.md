@@ -1,43 +1,22 @@
-# PodFeed SDK
+# Podfeed SDK Samples
 
-A Python SDK for the PodFeed API, enabling developers to generate high-quality Podcast-style audio content from various input sources using AI.
+Example scripts demonstrating the [Podfeed Python SDK](https://github.com/smh-labs/podfeed-sdk-python) for generating podcast-style audio content from various input sources.
 
-## Features
+## Prerequisites
 
-- **Multiple Input Types**: Support for text, URLs, files, topics, and bring-your-own-script
-- **Audio Generation Modes**: Monologue (single voice) and dialogue (two voices) modes
-- **Voice Customization**: Multiple voice options for different languages. Some voices support custom instructions
-- **Script Customization**: Adjustable complexity levels, lengths, and emphasis
+1. **Install the SDK**:
+   ```bash
+   pip install podfeed-sdk
+   ```
 
+2. **Get an API key** from [podfeed.ai](https://podfeed.ai) (log in, then go to the API section).
 
-## Installation
-
-```bash
-pip install podfeed-sdk
-```
-
-
-## Authentication
-
-The SDK supports two ways to provide your API key:
-
-1. **Environment Variable**:
+3. **Set the API key**:
    ```bash
    export PODFEED_API_KEY="your-api-key-here"
    ```
 
-2. **Direct initialization**:
-   ```python
-   from podfeed import PodfeedClient
-   
-   client = PodfeedClient(api_key="your-api-key-here")
-   ```
-
 ## Quick Start
-
-
-### Get an API key
-Go to [https://podfeed.ai](https://podfeed.ai), log in, and get an API key.
 
 ### Generate Audio (from Website)
 
@@ -64,25 +43,23 @@ result = client.generate_audio(
         mode="dialogue",
         input_content=InputContent(url=website_url),
         voice_config=VoiceConfig(
-            host_voice="google-male-puck", cohost_voice="google-female-leda"
+            host_voice="gemini-puck", cohost_voice="gemini-achird"
         ),
         content_config=ContentConfig(
             level="intermediate",
             length="medium",
             language="en-US",
-            emphasis="",
-            questions="what kind of content can I use with Podfeed?",
-            user_instructions=""
+            questions="What kind of content can I use with Podfeed?",
         ),
     )
 )
 
-task_id = response["task_id"]
+task_id = result["task_id"]
 print(f"Task created: {task_id}")
 
 # Wait for completion
-result = client.wait_for_completion(task_id)
-print(f"Audio generated: {result['result']['audio_url']}")
+final = client.wait_for_completion(task_id)
+print(f"Audio generated: {final['result']['audio_url']}")
 ```
 
 ### List Available Voices
@@ -90,19 +67,22 @@ print(f"Audio generated: {result['result']['audio_url']}")
 ```python
 from podfeed import PodfeedClient
 
-api_key = os.getenv("PODFEED_API_KEY")
-if not api_key:
-    print("Error: PODFEED_API_KEY environment variable not set")
-    return 1
+client = PodfeedClient()  # uses PODFEED_API_KEY env var
 
-client = PodfeedClient(api_key=api_key)
-
-voices_config = client.list_available_voices()
-print(voices_config)
+voices = client.list_available_voices()
+for lang_code, lang_data in voices.items():
+    print(f"{lang_data['language_name']} ({lang_code}):")
+    for voice_id, info in lang_data["voices"].items():
+        print(f"  {voice_id} - {info.get('tts', 'unknown')} ({info.get('credits_multiplier', 1.0)}x credits)")
 ```
 
-## Usage Examples
-See the example files in this directory.
+## Examples
+
+Each example is a standalone script. Run any example with:
+
+```bash
+python example_website.py
+```
 
 * `example_bring_your_own_script.py`: Generate audio from your own script, using Podfeed as a text-to-speech service only.
 * `example_combined_sources.py`: **New** - Combine multiple sources (text + URL + file) in one request.
@@ -117,34 +97,41 @@ See the example files in this directory.
 ## Error Handling
 
 ```python
-from podfeed_sdk import PodfeedClient, PodfeedError, PodfeedAuthError, PodfeedAPIError
+from podfeed import PodfeedClient, PodfeedError, PodfeedAuthError, PodfeedAPIError
+from podfeed import AudioGenerationRequest, InputContent, VoiceConfig
 
 try:
     client = PodfeedClient()
-    response = client.generate_audio(
-        input_type="text",
-        text_content="Sample text"
+    task = client.generate_audio(
+        request=AudioGenerationRequest(
+            input_type="text",
+            mode="monologue",
+            input_content=InputContent(text="Sample text content here."),
+            voice_config=VoiceConfig(voice="gemini-achird"),
+        )
     )
-except PodFeedAuthError as e:
+    result = client.wait_for_completion(task["task_id"])
+except PodfeedAuthError as e:
     print(f"Authentication error: {e}")
-except PodFeedAPIError as e:
+except PodfeedAPIError as e:
     print(f"API error: {e.message} (Status: {e.status_code})")
-except PodFeedError as e:
+except PodfeedError as e:
     print(f"General error: {e}")
 ```
 
-## API Reference
-We'll be publishing an API reference and documentation soon.
+## SDK Documentation
 
+For the full SDK reference, see the [Podfeed Python SDK README](https://github.com/smh-labs/podfeed-sdk-python).
+
+For API documentation, visit [podfeed.ai/developers](https://podfeed.ai/developers).
 
 ## Requirements
 
 - Python 3.7+
-- requests >= 2.25.0
-
-## Rate Limits
-Details coming soon.
+- `podfeed-sdk` (install via `pip install podfeed-sdk`)
 
 ## Support
 
-For API support, email support@podfeed.ai.
+- **SDK Documentation**: [github.com/smh-labs/podfeed-sdk-python](https://github.com/smh-labs/podfeed-sdk-python)
+- **API Documentation**: [podfeed.ai/developers](https://podfeed.ai/developers)
+- **Email**: support@podfeed.ai
